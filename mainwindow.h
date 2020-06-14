@@ -51,12 +51,17 @@ private:
     QComboBox *combox;
 
   //  SelectionBox* SelBox;
+    TowerPosition* m_position;
    QLabel *round;
    QLabel *goldcount;
    QLabel*gameHp;
    void initPosition();
    void addWayPoints();
+   void addWayPoints2();
    bool loadWave();
+   bool loadWave2();
+   void loadPosition();
+   bool m_flag;
    bool canBuyTower() const;
     void DrawSelectionBox(QPainter&);
 //	void drawWave(QPainter *painter);
@@ -66,11 +71,13 @@ private:
    void initConfig();
 
    QPoint m_pos;
+   int                      m_round;
     int						m_waves;
     int						m_playerHp;
     int						m_playrGold;
     bool					m_gameEnded;
     bool					m_gameWin;
+    QLabel                 *labelround;
 //	AudioPlayer *			m_audioPlayer;
     QList<QVariant>			m_wavesInfo;
     QList<TowerPosition>	m_towerPositionsList;

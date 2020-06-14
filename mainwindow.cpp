@@ -28,9 +28,11 @@ MainWindow::MainWindow(QWidget *parent)
     m_playrGold=1500;
     m_gameEnded=false;
     m_gameWin =false;
+    m_round =1;
+    m_flag=true;
     QHBoxLayout *blayout =new QHBoxLayout();
     QVBoxLayout *vlayout = new QVBoxLayout();
-    QLabel *labelround =new QLabel("关卡:     1");
+     labelround =new QLabel(tr("关卡:     ")+QString::number(m_round));
     round=new QLabel();
       QLabel *labelgold =new QLabel("金币:");
       goldcount=new QLabel();
@@ -57,17 +59,14 @@ MainWindow::MainWindow(QWidget *parent)
       blayout->addLayout(vlayout);
       ui->widget->setFixedSize(780,490);
         this->centralWidget()->setLayout(blayout);
-   // initWaves();
-      initConfig();//初始化怪物信息
 
-    addWayPoints();
-    //初始化炮塔位置
-     initPosition();
+           initPosition();
+
     combox =new QComboBox(this);
-    combox->addItem(QIcon("../AL_towerdefence/image/激光1.png"),"一级激光塔");
-    combox->addItem(QIcon("../AL_towerdefence/image/激光2.png"),"二级激光塔");
-    combox->addItem(QIcon("../AL_towerdefence/image/箭塔1.png"),"一级箭塔");
-    combox->addItem(QIcon("../AL_towerdefence/image/箭塔2.png"),"二级箭塔");
+    combox->addItem(QIcon("../lwTowerDemo/image/激光1.png"),"一级激光塔");
+    combox->addItem(QIcon("../lwTowerDemo/image/激光2.png"),"二级激光塔");
+    combox->addItem(QIcon("../lwTowerDemo/image/箭塔1.png"),"一级箭塔");
+    combox->addItem(QIcon("../lwTowerDemo/image/箭塔2.png"),"二级箭塔");
     combox->setCurrentIndex(-1);
     combox->hide();
     connect(combox,SIGNAL(currentIndexChanged(int)),this,SLOT(getInform(int)));
@@ -131,16 +130,42 @@ void MainWindow::paintEvent(QPaintEvent *)
 {
     if (m_gameEnded || m_gameWin)
     {
-        QString text = m_gameEnded ? "YOU LOST!!!" : "YOU WIN!!!";
+    //    QString text = m_gameEnded ? "YOU LOST!!!" : "YOU WIN!!!";
         QPainter painter(this);
-        painter.setPen(QPen(Qt::red));
-        painter.drawText(rect(), Qt::AlignCenter, text);
-        return;
+  //      painter.setPen(QPen(Qt::red));
+  //      painter.drawText(rect(), Qt::AlignCenter, text);
+        QPixmap endPic;
+        if(m_gameEnded)
+        {
+             m_flag =false;
+            endPic=QPixmap("../lwTowerDemo/image/lost.png");
+             painter.drawPixmap(QRect(0,0,760,534),endPic);
+        }
+        else if(m_gameWin)
+        {   m_flag =false;
+            m_towerPositionsList.clear();
+            m_towersList.clear();
+            m_enemyList.clear();
+            m_bulletList.clear();
+              endPic=QPixmap("../lwTowerDemo/image/success1.png");
+               painter.drawPixmap(QRect(0,0,760,534),endPic);
+                  startPushBUtton->setEnabled(true);
+
+
+        }
+
+    }
+    QPixmap cachePix;
+    if(m_round==1&&m_flag)
+    {
+        cachePix=QPixmap("../lwTowerDemo/image/Background.png");
+    }
+    else if(m_round==2&&m_flag)
+    {
+         cachePix=QPixmap("../lwTowerDemo/image/Background2.png");
     }
 
-    QPixmap cachePix("../AL_towerdefence/image/Background.png");
     QPainter cachePainter(&cachePix);
-
     foreach (const TowerPosition &towerPos, m_towerPositionsList)
         towerPos.draw(&cachePainter);
 
@@ -154,7 +179,9 @@ void MainWindow::paintEvent(QPaintEvent *)
         enemy->draw(&cachePainter);
 
     foreach (const Weapon *bullet, m_bulletList)
+    {
         bullet->draw(&cachePainter);
+     }
 
 //	drawWave(&cachePainter);
 //	drawHP(&cachePainter);
@@ -163,24 +190,25 @@ void MainWindow::paintEvent(QPaintEvent *)
     m_waves=+1;
     goldcount->setText(QString::number(m_playrGold));
     gameHp->setText(QString::number(m_playerHp));
+    labelround->setText(tr("关卡:     ")+QString::number(m_round));
     QPainter painter(this);
-    painter.drawPixmap(0, 0, cachePix);
+      painter.drawPixmap(0, 0, cachePix);
 //    QPixmap result;
 //    if(m_playerHp==5)
 //    {
-//       result =QPixmap("../AL_towerdefence/image/45kg.png");
+//       result =QPixmap("../lwTowerDemo/image/45kg.png");
 //    }
 //    else if(m_playerHp==4)
 //    {
-//        result =QPixmap("../AL_towerdefence/image/50kg.png");
+//        result =QPixmap("../lwTowerDemo/image/50kg.png");
 //    }
 //    else if(m_playerHp==3)
 //    {
-//         result =QPixmap("../AL_towerdefence/image/55kg.png");
+//         result =QPixmap("../lwTowerDemo/image/55kg.png");
 //    }
 //    else
 //    {
-//        result =QPixmap("../AL_towerdefence/image/60kg.png");
+//        result =QPixmap("../lwTowerDemo/image/60kg.png");
 //    }
 //    painter.drawPixmap(730,420,result);
 }
@@ -199,13 +227,15 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
         {
 
     //		m_audioPlayer->playSound(TowerPlaceSound);
+            m_position=&it.i->t();
             combox->move(event->pos());
             combox->showPopup();
+            m_pos=it->centerPos();
           //  combox->show();
 
 
-            m_pos=it->centerPos();
-             it->setHasTower();
+
+//             it->setHasTower();
 //            Tower *tower = new Tower(it->centerPos(), this);
 //            m_towersList.push_back(tower);
 //            update();
@@ -259,29 +289,31 @@ void MainWindow::initConfig()
     QVector<QPair<QString,int>> round1;
      QVector<QPair<QString,int>> round2;
        QVector<QPair<QString,int>> round3;
-    for (int i=0;i<5;i++) {
+    for (int i=0;i<3;i++) {
         temp.first="怪物1";
-        temp.second=(qrand()%30)*100;
+        temp.second=(qrand()%2)*1000;
         round1.append(temp);
         temp.first="怪物2";
-        temp.second=(10+qrand()%40)*100;
+        temp.second=(10+qrand()%20)*100;
         round2.append(temp);
-        temp.first="怪物3";
-         temp.second=(3+qrand()%3)*1000;
+      //  temp.first="怪物3";
+         temp.second=(6+qrand()%2)*1000;
          round3.append(temp);
     }
-    for (int i=0;i<3;i++) {
+    for (int i=0;i<2;i++) {
         temp.first="怪物2";
-        temp.second=(3+qrand()%3)*1000;
+        temp.second=(2+qrand()%1)*1000;
         round1.append(temp);
-        round3.append(temp);
-        temp.first="怪物3";
-        temp.second=(2+qrand()%3)*1000;
+ //       round3.append(temp);
+//        temp.first="怪物3";
+        temp.second=(2+qrand()%1)*1000;
         round2.append(temp);
+          temp.second=(5+qrand()%2)*1000;
+         round3.append(temp);
     }
-    paraconfig.insert(1,round1);
-     paraconfig.insert(2,round2);
-      paraconfig.insert(3,round3);
+    paraconfig.insert(0,round1);
+     paraconfig.insert(1,round2);
+   //   paraconfig.insert(2,round3);
 }
 
 void MainWindow::awardGold(int gold)
@@ -335,6 +367,37 @@ void MainWindow::addWayPoints()
 
 }
 
+void MainWindow::addWayPoints2()
+{
+    attackPath *wayPoint1 = new attackPath(QPoint(727,500));
+    m_wayPointsList.push_back(wayPoint1);
+
+    attackPath *wayPoint2 = new attackPath(QPoint(492,505));
+    m_wayPointsList.push_back(wayPoint2);
+    wayPoint2->setNextWayPoint(wayPoint1);
+
+    attackPath *wayPoint3 = new attackPath(QPoint(494,274));
+    m_wayPointsList.push_back(wayPoint3);
+    wayPoint3->setNextWayPoint(wayPoint2);
+
+    attackPath *wayPoint4 = new attackPath(QPoint(26,276));
+    m_wayPointsList.push_back(wayPoint4);
+    wayPoint4->setNextWayPoint(wayPoint3);
+
+    attackPath *wayPoint5 = new attackPath(QPoint(29,117));
+    m_wayPointsList.push_back(wayPoint5);
+    wayPoint5->setNextWayPoint(wayPoint4);
+
+    attackPath *wayPoint6 = new attackPath(QPoint(722 ,122));
+    m_wayPointsList.push_back(wayPoint6);
+    wayPoint6->setNextWayPoint(wayPoint5);
+
+    attackPath *wayPoint7 = new attackPath(QPoint(722,7));
+    m_wayPointsList.push_back(wayPoint7);
+    wayPoint7->setNextWayPoint(wayPoint6);
+
+}
+
 void MainWindow::getHpDamage(int damage/* = 1*/)
 {
 //	m_audioPlayer->playSound(LifeLoseSound);
@@ -356,6 +419,7 @@ void MainWindow::removedEnemy(Monster *enemy)
         if (!loadWave())
         {
             m_gameWin = true;
+            m_round++;
             // 游戏胜利转到游戏胜利场景
             // 这里暂时以打印处理
         }
@@ -403,7 +467,7 @@ void MainWindow::updateMap()
 
 bool MainWindow::loadWave()
 {
-   if(m_waves>paraconfig.size())
+   if(m_waves>=paraconfig.size())
    {
        return false;
    }
@@ -413,20 +477,21 @@ bool MainWindow::loadWave()
                QPixmap temp;
              if(paraconfig[i][j].first=="怪物1")
              {
-                  temp=QPixmap("../AL_towerdefence/image/怪物一.png");
+                  temp=QPixmap("../lwTowerDemo/image/怪物一.png");
              }
               else if(paraconfig[i][j].first=="怪物2")
               {
-                   temp=QPixmap("../AL_towerdefence/image/怪物二.png");
+                   temp=QPixmap("../lwTowerDemo/image/怪物二.png");
               }
 //              else if(paraconfig[i][j].first=="怪物3")
 //              {
-//                    temp=QPixmap("../AL_towerdefence/image/怪兽3.png");
+//                    temp=QPixmap("../lwTowerDemo/image/怪兽3.png");
 //              }
              int stime=paraconfig[i][j].second;
              Monster *enemy = new Monster(startWayPoint, this,temp);
              m_enemyList.push_back(enemy);
               QTimer::singleShot(stime, enemy, SLOT(doActivate()));
+             // break;
          }
      }
      return true;
@@ -461,8 +526,21 @@ bool MainWindow::loadWave()
 //        QTimer::singleShot(spawnTime, enemy, SLOT(doActivate()));
 //    }
 
-//    return true;
+     //    return true;
 }
+
+bool MainWindow::loadWave2()
+{
+    m_flag=true;
+    m_waves=0;
+   m_playerHp=10;
+   m_playrGold=2000;
+   m_gameEnded=false;
+   m_gameWin =false;
+
+}
+
+
 
 QList<Monster *> MainWindow::enemyList() const
 {
@@ -472,7 +550,61 @@ QList<Monster *> MainWindow::enemyList() const
 void MainWindow::gameStart()
 {
     startPushBUtton->setDisabled(true);
-    loadWave();
+    if(m_round==1)
+    {
+        initConfig();//初始化怪物信息
+
+      addWayPoints();
+      //初始化炮塔位置
+
+        loadWave();
+    }
+    else if(m_round==2)
+    {
+        loadWave2();
+        addWayPoints2();//添加路径
+        loadWave();//添加怪物
+        loadPosition();
+    }
+
+
+}
+
+void MainWindow::loadPosition()
+{
+     QPoint p1(541,11);
+      QPoint p2(390,11);
+     QPoint p5(235,11);
+     QPoint p7(82,11);
+     //第二
+     QPoint p9(83,164);
+     QPoint p11(238,164);
+     QPoint p12(388,164);
+       QPoint p13(543,164);
+      //第三
+       QPoint p16(82,316);
+       QPoint p17(236,316);
+       QPoint p18(390,316);
+     QPoint p14(540,311);
+
+       //第四排
+
+       QPoint p15(540,394);
+        QPoint p19(390,470);
+     m_towerPositionsList.push_back(p1);
+    m_towerPositionsList.push_back(p2);
+    m_towerPositionsList.push_back(p5);
+     m_towerPositionsList.push_back(p7);
+    m_towerPositionsList.push_back(p9);
+    m_towerPositionsList.push_back(p11);
+    m_towerPositionsList.push_back(p12);
+     m_towerPositionsList.push_back(p13);
+     m_towerPositionsList.push_back(p14);
+     m_towerPositionsList.push_back(p15);
+      m_towerPositionsList.push_back(p16);
+      m_towerPositionsList.push_back(p17);
+      m_towerPositionsList.push_back(p18);
+      m_towerPositionsList.push_back(p19);
 }
 
 void MainWindow::getInform(int temp)
@@ -480,32 +612,33 @@ void MainWindow::getInform(int temp)
 
     if(temp==0)
     {
-        Tower *tower = new Tower(m_pos, this,QPixmap("../AL_towerdefence/image/激光1.png"));
+        Tower *tower = new Tower(m_pos, this,QPixmap("../lwTowerDemo/image/激光1.png"));
         m_towersList.push_back(tower);
            m_playrGold =m_playrGold-100;
         update();
     }
     else if(temp==1)
         {
-        Tower *tower = new Tower(m_pos, this,QPixmap("../AL_towerdefence/image/激光2.png"));
+        Tower *tower = new Tower(m_pos, this,QPixmap("../lwTowerDemo/image/激光2.png"));
         m_towersList.push_back(tower);
           m_playrGold =m_playrGold-200;
         update();
       }
     else if(temp==2)
     {
-        Tower *tower = new Tower(m_pos, this,QPixmap("../AL_towerdefence/image/箭塔1.png"));
+        Tower *tower = new Tower(m_pos, this,QPixmap("../lwTowerDemo/image/箭塔1.png"));
         m_towersList.push_back(tower);
           m_playrGold =m_playrGold-300;
         update();
     }
     else if(temp==3)
     {
-        Tower *tower = new Tower(m_pos, this,QPixmap("../AL_towerdefence/image/箭塔2.png"));
+        Tower *tower = new Tower(m_pos, this,QPixmap("../lwTowerDemo/image/箭塔2.png"));
         m_towersList.push_back(tower);
           m_playrGold =m_playrGold-400;
         update();
     }
     combox->hide();
     combox->setCurrentIndex(-1);
+    m_position->setHasTower();
 }

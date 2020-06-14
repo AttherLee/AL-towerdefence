@@ -6,22 +6,22 @@
 class PListReader
 {
 public:
-	PListReader();
+    PListReader();
 
-	bool read(QIODevice *device);
-	const QList<QVariant> data() const;
+    bool read(QIODevice *device);
+    const QList<QVariant> data() const;
 
-	QString errorString() const;
-
-private:
-	void readPList();
-	void readArray(QList<QVariant> &array);
-	void readDict(QList<QVariant> &array);
-	void readKey(QMap<QString, QVariant> &dict);
+    QString errorString() const;
 
 private:
-	QXmlStreamReader	m_xmlReader;
-	QList<QVariant>		m_data;
+    void readPList();
+    void readArray(QList<QVariant> &array);
+    void readDict(QList<QVariant> &array);
+    void readKey(QMap<QString, QVariant> &dict);
+
+private:
+    QXmlStreamReader	m_xmlReader;
+    QList<QVariant>		m_data;
 };
 
 #endif // PLISTREADER_H
