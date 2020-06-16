@@ -24,8 +24,8 @@ MainWindow::MainWindow(QWidget *parent)
     this->setWindowTitle("塔防小游戏");
       this->resize(900,490);
      m_waves=0;
-    m_playerHp=7;
-    m_playrGold=1500;
+    m_playerHp=5;
+    m_playrGold=3000;
     m_gameEnded=false;
     m_gameWin =false;
     m_round =1;
@@ -64,12 +64,19 @@ MainWindow::MainWindow(QWidget *parent)
 
     combox =new QComboBox(this);
     combox->addItem(QIcon("../lwTowerDemo/image/激光1.png"),"一级激光塔");
-    combox->addItem(QIcon("../lwTowerDemo/image/激光2.png"),"二级激光塔");
+   // combox->addItem(QIcon("../lwTowerDemo/image/激光2.png"),"二级激光塔");
     combox->addItem(QIcon("../lwTowerDemo/image/箭塔1.png"),"一级箭塔");
-    combox->addItem(QIcon("../lwTowerDemo/image/箭塔2.png"),"二级箭塔");
+    combox->addItem(QIcon("../lwTowerDemo/image/环状炮塔1.png"),"一级环状");
     combox->setCurrentIndex(-1);
     combox->hide();
+
+    combox_c=new QComboBox(this);
+    combox_c->addItem(QIcon("../lwTowerDemo/image/升级标识.png"),"升级");
+    combox_c->addItem(QIcon("../lwTowerDemo/image/拆除标识.png"),"卖出");
+    combox_c->setCurrentIndex(-1);
+    combox_c->hide();
     connect(combox,SIGNAL(currentIndexChanged(int)),this,SLOT(getInform(int)));
+    connect(combox_c,SIGNAL(currentIndexChanged(int)),this,SLOT(changeState(int)));
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(updateMap()));
     timer->start(10);
@@ -148,6 +155,10 @@ void MainWindow::paintEvent(QPaintEvent *)
             m_enemyList.clear();
             m_bulletList.clear();
               endPic=QPixmap("../lwTowerDemo/image/success1.png");
+              if(m_round==3)
+              {
+                    endPic=QPixmap("../lwTowerDemo/image/success2.png");
+              }
                painter.drawPixmap(QRect(0,0,760,534),endPic);
                   startPushBUtton->setEnabled(true);
 
@@ -217,12 +228,21 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
 {
     qDebug()<<event->pos();
     combox->hide();
+    combox_c->hide();
     QPoint pressPos = event->pos();
             //选中防御塔，选择框显示
 
     auto it = m_towerPositionsList.begin();
     while (it != m_towerPositionsList.end())
     {
+        if(it->containPoint(pressPos)&&it->hasTower())
+        {
+            combox_c->move(event->pos());
+            combox_c->showPopup();
+
+             m_position=&it.i->t();
+             m_pos=it->centerPos();
+        }
         if (canBuyTower() && it->containPoint(pressPos) && !it->hasTower())
         {
 
@@ -253,25 +273,6 @@ bool MainWindow::canBuyTower() const
         return true;
     return false;
 }
-
-
-//void MainWindow::drawWave(QPainter *painter)
-//{
-//	painter->setPen(QPen(Qt::red));
-//	painter->drawText(QRect(400, 5, 100, 25), QString("WAVE : %1").arg(m_waves + 1));
-//}
-
-//void MainWindow::drawHP(QPainter *painter)
-//{
-//	painter->setPen(QPen(Qt::red));
-//	painter->drawText(QRect(30, 5, 100, 25), QString("HP : %1").arg(m_playerHp));
-//}
-
-//void MainWindow::drawPlayerGold(QPainter *painter)
-//{
-//	painter->setPen(QPen(Qt::red));
-//	painter->drawText(QRect(200, 5, 200, 25), QString("GOLD : %1").arg(m_playrGold));
-//}
 
 void MainWindow::doGameOver()
 {
@@ -612,33 +613,64 @@ void MainWindow::getInform(int temp)
 
     if(temp==0)
     {
-        Tower *tower = new Tower(m_pos, this,QPixmap("../lwTowerDemo/image/激光1.png"));
+        Tower *tower = new Tower(m_pos,this,1,1);
         m_towersList.push_back(tower);
-           m_playrGold =m_playrGold-100;
+           m_playrGold =m_playrGold-300;
         update();
     }
     else if(temp==1)
         {
-        Tower *tower = new Tower(m_pos, this,QPixmap("../lwTowerDemo/image/激光2.png"));
+        Tower *tower = new Tower(m_pos, this,2,1);
         m_towersList.push_back(tower);
-          m_playrGold =m_playrGold-200;
+          m_playrGold =m_playrGold-300;
         update();
       }
     else if(temp==2)
     {
-        Tower *tower = new Tower(m_pos, this,QPixmap("../lwTowerDemo/image/箭塔1.png"));
+        Tower *tower = new Tower(m_pos, this,3,1);
         m_towersList.push_back(tower);
           m_playrGold =m_playrGold-300;
         update();
     }
-    else if(temp==3)
-    {
-        Tower *tower = new Tower(m_pos, this,QPixmap("../lwTowerDemo/image/箭塔2.png"));
-        m_towersList.push_back(tower);
-          m_playrGold =m_playrGold-400;
-        update();
-    }
+//    else if(temp==3)
+//    {
+//        Tower *tower = new Tower(m_pos, this,QPixmap("../lwTowerDemo/image/箭塔2.png"));
+//        m_towersList.push_back(tower);
+//          m_playrGold =m_playrGold-400;
+//        update();
+//    }
     combox->hide();
     combox->setCurrentIndex(-1);
     m_position->setHasTower();
+}
+
+void MainWindow::changeState(int temp)
+{
+    if(temp==1)
+    {
+       m_position->setNoToewer();
+       for (int i=0;i<m_towersList.count();i++) {
+           if(m_towersList.at(i)->m_pos==m_pos)
+           {
+               m_towersList.removeAt(i);
+                   m_playrGold =m_playrGold+150;
+                   break;
+           }
+       }
+    }
+    else if(temp==0)
+    {
+        for (int i=0;i<m_towersList.count();i++) {
+            if(m_towersList.at(i)->m_pos==m_pos&&m_towersList.at(i)->m_degree<3)
+            {
+                int degree=m_towersList.at(i)->m_degree;
+                int type=m_towersList.at(i)->m_type;
+                Tower *tw=new Tower(m_pos,this,type,++degree);
+                m_towersList.replace(i,tw);
+                    m_playrGold =m_playrGold-300;
+                    break;
+            }
+        }
+    }
+    combox_c->setCurrentIndex(-1);
 }

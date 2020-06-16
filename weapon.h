@@ -17,20 +17,21 @@ class Weapon : QObject
 
 public:
     Weapon(QPoint startPos, QPoint targetPoint, int damage, Monster *target,
-           MainWindow *game, const QPixmap &sprite = QPixmap("../lwTowerDemo/image/Shells0.png"));
+           MainWindow *game,int type);
 
     void draw(QPainter *painter) const;
     void move();
+    void round();
     void setCurrentPos(QPoint pos);
     QPoint currentPos() const;
-
+    int m_type;
 private slots:
     void hitTarget();
 
 private:
     const QPoint	m_startPos;
     const QPoint	m_targetPos;
-    const QPixmap	m_sprite;
+     QPixmap	m_sprite;
     QPoint			m_currentPos;
     Monster *			m_target;
     MainWindow *	m_game;

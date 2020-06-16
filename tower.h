@@ -15,7 +15,7 @@ class Tower : QObject
 {
     Q_OBJECT
 public:
-    Tower(QPoint pos, MainWindow *game, const QPixmap &sprite);
+    Tower(QPoint pos, MainWindow *game,int type,int degree);
     ~Tower();
 
     void draw(QPainter *painter) const;
@@ -26,7 +26,9 @@ public:
     void removeBullet();
     void damageEnemy();
     void lostSightOfEnemy();
-
+    const QPoint	m_pos;
+    int m_type;
+    int m_degree;
 private slots:
     void shootWeapon();
 
@@ -41,8 +43,8 @@ private:
     MainWindow *	m_game;
     QTimer *		m_fireRateTimer;
 
-    const QPoint	m_pos;
-    const QPixmap	m_sprite;
+
+    QPixmap	m_sprite;
 
     static const QSize ms_fixedSize;
 };

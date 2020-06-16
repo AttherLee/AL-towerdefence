@@ -78,7 +78,7 @@ void Monster::move()
 
     // 确定敌人选择方向
     // 默认图片向左,需要修正180度转右
-    m_rotationSprite = qRadiansToDegrees(qAtan2(normalized.y(), normalized.x())) + 180;
+  //  m_rotationSprite = qRadiansToDegrees(qAtan2(normalized.y(), normalized.x())) + 90;
 }
 
 void Monster::draw(QPainter *painter) const

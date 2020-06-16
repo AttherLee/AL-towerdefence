@@ -7,20 +7,40 @@
 const QSize Weapon::ms_fixedSize(8, 8);
 
 Weapon::Weapon(QPoint startPos, QPoint targetPoint, int damage, Monster *target,
-               MainWindow *game, const QPixmap &sprite)
+               MainWindow *game,int type)
     : m_startPos(startPos)
     , m_targetPos(targetPoint)
-    , m_sprite(sprite)
     , m_currentPos(startPos)
     , m_target(target)
     , m_game(game)
     , m_damage(damage)
 {
+    m_type=type;
+    if(type==1)
+    {
+        m_sprite=QPixmap("../lwTowerDemo/image/Shells0.png");
+    }else if(type==2)
+    {
+           m_sprite=QPixmap("../lwTowerDemo/image/Shells1.png");
+    }
+    else
+    {
+        m_sprite=QPixmap("../lwTowerDemo/image/Shells2.png");
+    }
 }
 
 void Weapon::draw(QPainter *painter) const
 {
+    if(m_type!=3)
+    {
     painter->drawPixmap(m_currentPos, m_sprite);
+    }
+    else
+    {
+        QPoint temppos(m_currentPos.x()-55,m_currentPos.y()-55);
+        painter->drawPixmap(temppos, m_sprite);
+    }
+
 }
 
 void Weapon::move()
@@ -35,7 +55,14 @@ void Weapon::move()
 
     animation->start();
 }
-
+void Weapon::round()
+{
+    static const int dur_round = 100;
+    QPropertyAnimation *animation = new QPropertyAnimation(this, "m_currentPos");
+    animation->setDuration(dur_round);
+    connect(animation, SIGNAL(finished()), this, SLOT(hitTarget()));
+    animation->start();
+}
 void Weapon::hitTarget()
 {
     // 这样处理的原因是:

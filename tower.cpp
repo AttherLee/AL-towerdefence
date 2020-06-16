@@ -11,17 +11,63 @@
 
 const QSize Tower::ms_fixedSize(42, 42);
 
-Tower::Tower(QPoint pos, MainWindow *game, const QPixmap &sprite)
-    : m_attacking(false)
-    , m_attackRange(140)
-    , m_damage(10)
-    , m_fireRate(1000)
-    , m_rotationSprite(0.0)
-    , m_chooseEnemy(NULL)
-    , m_game(game)
-    , m_pos(pos)
-    , m_sprite(sprite)
+Tower::Tower(QPoint pos, MainWindow *game,int type,int degree)
+    : m_pos(pos)
 {
+     m_attacking=false;
+     m_attackRange=140;
+     m_damage=10;
+     m_fireRate=1000;
+     m_rotationSprite=0.0;
+     m_chooseEnemy=NULL;
+     m_game=game;
+    m_type =type;
+    m_degree =degree;
+    if(m_type==1)
+    {
+        if(m_degree==1)
+        {
+        m_sprite=QPixmap("../lwTowerDemo/image/激光1.png");
+         m_damage=5;
+        }
+        else
+        {
+              m_sprite=QPixmap("../lwTowerDemo/image/激光2.png");
+              m_damage=11;
+               m_attackRange=150;
+        }
+
+    }
+    else if(m_type==2)
+    {
+        if(m_degree==1)
+        {
+        m_sprite=QPixmap("../lwTowerDemo/image/箭塔1.png");
+        m_damage=9;
+         m_attackRange=140;
+        }
+        else
+        {
+              m_sprite=QPixmap("../lwTowerDemo/image/箭塔2.png");
+              m_damage=18;
+               m_attackRange=160;
+        }
+    }
+    else if(m_type==3)
+    {
+        if(m_degree==1)
+        {
+        m_sprite=QPixmap("../lwTowerDemo/image/环状炮塔1.png");
+        m_damage=6;
+         m_attackRange=150;
+
+        }
+        else
+        {
+              m_sprite=QPixmap("../lwTowerDemo/image/环状炮塔2.png");
+         m_attackRange=200;
+        }
+    }
     m_fireRateTimer = new QTimer(this);
     connect(m_fireRateTimer, SIGNAL(timeout()), this, SLOT(shootWeapon()));
 }
@@ -41,6 +87,10 @@ void Tower::checkEnemyInRange()
         QVector2D normalized(m_chooseEnemy->pos() - m_pos);
         normalized.normalize();
         m_rotationSprite = qRadiansToDegrees(qAtan2(normalized.y(), normalized.x())) - 90;
+        if(m_type==3)
+        {
+            m_rotationSprite=0;
+        }
 
         // 如果敌人脱离攻击范围
         if (!collisionWithCircle(m_pos, m_attackRange, m_chooseEnemy->pos(), 1))
@@ -92,9 +142,16 @@ void Tower::chooseEnemyForAttack(Monster *enemy)
 
 void Tower::shootWeapon()
 {
-    Weapon *bullet = new Weapon(m_pos, m_chooseEnemy->pos(), m_damage, m_chooseEnemy, m_game);
-    bullet->move();
-    m_game->addBullet(bullet);
+    Weapon *wp = new Weapon(m_pos, m_chooseEnemy->pos(), m_damage, m_chooseEnemy, m_game,m_type);
+    if(m_type!=3)
+    {
+    wp->move();
+    }
+    else
+    {
+        wp->round();
+    }
+    m_game->addBullet(wp);
 }
 
 void Tower::targetKilled()

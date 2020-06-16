@@ -44,12 +44,13 @@ public slots:
     void updateMap();
     void gameStart();
     void getInform(int);
+    void changeState(int);
 private:
     QMap<int,QVector<QPair<QString,int>>> paraconfig;
     const int initGold =300;
     QPushButton *startPushBUtton;
     QComboBox *combox;
-
+    QComboBox*combox_c;
   //  SelectionBox* SelBox;
     TowerPosition* m_position;
    QLabel *round;
