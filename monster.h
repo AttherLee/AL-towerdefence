@@ -14,7 +14,7 @@ class Monster : public QObject
 {
     Q_OBJECT
 public:
-    Monster(attackPath *startWayPoint, MainWindow *game, const QPixmap &sprite);
+    Monster(attackPath *startWayPoint, MainWindow *game, const int type);
     ~Monster();
 
     void draw(QPainter *painter) const;
@@ -40,7 +40,7 @@ private:
     MainWindow *	m_game;
     QList<Tower *>	m_attackedTowersList;
 
-    const QPixmap	m_sprite;
+     QPixmap	m_sprite;
     static const QSize ms_fixedSize;
 };
 

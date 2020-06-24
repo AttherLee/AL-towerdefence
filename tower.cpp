@@ -27,12 +27,12 @@ Tower::Tower(QPoint pos, MainWindow *game,int type,int degree)
     {
         if(m_degree==1)
         {
-        m_sprite=QPixmap("../lwTowerDemo/image/激光1.png");
+        m_sprite=QPixmap("../AL_towerdefence/image/激光1.png");
          m_damage=5;
         }
         else
         {
-              m_sprite=QPixmap("../lwTowerDemo/image/激光2.png");
+              m_sprite=QPixmap("../AL_towerdefence/image/激光2.png");
               m_damage=11;
                m_attackRange=150;
         }
@@ -42,13 +42,13 @@ Tower::Tower(QPoint pos, MainWindow *game,int type,int degree)
     {
         if(m_degree==1)
         {
-        m_sprite=QPixmap("../lwTowerDemo/image/箭塔1.png");
+        m_sprite=QPixmap("../AL_towerdefence/image/箭塔1.png");
         m_damage=9;
          m_attackRange=140;
         }
         else
         {
-              m_sprite=QPixmap("../lwTowerDemo/image/箭塔2.png");
+              m_sprite=QPixmap("../AL_towerdefence/image/箭塔2.png");
               m_damage=18;
                m_attackRange=160;
         }
@@ -57,14 +57,14 @@ Tower::Tower(QPoint pos, MainWindow *game,int type,int degree)
     {
         if(m_degree==1)
         {
-        m_sprite=QPixmap("../lwTowerDemo/image/环状炮塔1.png");
+        m_sprite=QPixmap("../AL_towerdefence/image/环状炮塔1.png");
         m_damage=6;
          m_attackRange=150;
 
         }
         else
         {
-              m_sprite=QPixmap("../lwTowerDemo/image/环状炮塔2.png");
+              m_sprite=QPixmap("../AL_towerdefence/image/环状炮塔2.png");
          m_attackRange=200;
         }
     }

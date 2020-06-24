@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-
+#include <QMediaPlayer>
 #include <QList>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -16,7 +16,6 @@
 #include "tower.h"
 #include "weapon.h"
 #include "attackpath.h"
-//#include "selectionbox.h"
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -34,8 +33,6 @@ public:
     void removedBullet(Weapon *bullet);
     void addBullet(Weapon *bullet);
     void awardGold(int gold);
-
-    //AudioPlayer* audioPlayer() const;
     QList<Monster *> enemyList() const;
 
     void paintEvent(QPaintEvent *);
@@ -47,11 +44,9 @@ public slots:
     void changeState(int);
 private:
     QMap<int,QVector<QPair<QString,int>>> paraconfig;
-    const int initGold =300;
     QPushButton *startPushBUtton;
     QComboBox *combox;
     QComboBox*combox_c;
-  //  SelectionBox* SelBox;
     TowerPosition* m_position;
    QLabel *round;
    QLabel *goldcount;
@@ -63,14 +58,12 @@ private:
    bool loadWave2();
    void loadPosition();
    bool m_flag;
-   bool canBuyTower() const;
+   bool canBuyTower(int) const;
     void DrawSelectionBox(QPainter&);
-//	void drawWave(QPainter *painter);
-//	void drawHP(QPainter *painter);
-//	void drawPlayerGold(QPainter *painter);
    void doGameOver();
    void initConfig();
-
+   void musiscplay(QString str);
+    void musiscplay2(QString str);
    QPoint m_pos;
    int                      m_round;
     int						m_waves;
@@ -79,7 +72,8 @@ private:
     bool					m_gameEnded;
     bool					m_gameWin;
     QLabel                 *labelround;
-//	AudioPlayer *			m_audioPlayer;
+    QMediaPlayer *			m_musicPlayer;
+     QMediaPlayer *			m_musicPlayer2;
     QList<QVariant>			m_wavesInfo;
     QList<TowerPosition>	m_towerPositionsList;
     QList<Tower *>			m_towersList;

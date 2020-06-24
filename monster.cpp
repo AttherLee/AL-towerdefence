@@ -15,19 +15,34 @@ static const int Health_Bar_Width = 20;
 
 const QSize Monster::ms_fixedSize(46, 46);
 
-Monster::Monster(attackPath *startWayPoint, MainWindow *game, const QPixmap &sprite)
+Monster::Monster(attackPath *startWayPoint, MainWindow *game,int type)
     : QObject(0)
-    , m_active(false)
-    , m_maxHp(40)
-    , m_currentHp(40)
-    , m_walkingSpeed(1.0)
-    , m_rotationSprite(0.0)
-    , m_pos(startWayPoint->pos())
-    , m_destinationWayPoint(startWayPoint->nextWayPoint())
-    , m_game(game)
-    , m_sprite(sprite)
+
 {
-  //  m_sprite=":/image/monster.png";
+    m_active=false;
+
+     m_currentHp=40;
+
+     m_rotationSprite=0.0;
+    m_pos=startWayPoint->pos();
+    m_destinationWayPoint=startWayPoint->nextWayPoint();
+    m_game=game;
+
+    if(type==1)
+    {
+     m_sprite=QPixmap("../AL_towerdefence/image/怪物一.png");
+     m_walkingSpeed=2.0;
+      m_maxHp=30;
+       m_currentHp=30;
+    }
+    else if(type==2)
+    {
+         m_sprite= QPixmap("../AL_towerdefence/image/怪物二.png");
+         m_walkingSpeed=1.0;
+          m_maxHp=40;
+           m_currentHp=40;
+    }
+
 }
 
 Monster::~Monster()

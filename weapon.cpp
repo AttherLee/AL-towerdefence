@@ -18,14 +18,14 @@ Weapon::Weapon(QPoint startPos, QPoint targetPoint, int damage, Monster *target,
     m_type=type;
     if(type==1)
     {
-        m_sprite=QPixmap("../lwTowerDemo/image/Shells0.png");
+        m_sprite=QPixmap("../AL_towerdefence/image/shells3.jpg");
     }else if(type==2)
     {
-           m_sprite=QPixmap("../lwTowerDemo/image/Shells1.png");
+           m_sprite=QPixmap("../AL_towerdefence/image/Shells0.png");
     }
     else
     {
-        m_sprite=QPixmap("../lwTowerDemo/image/Shells2.png");
+        m_sprite=QPixmap("../AL_towerdefence/image/Shells2.png");
     }
 }
 

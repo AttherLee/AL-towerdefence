@@ -10,7 +10,7 @@ class QPainter;
 class TowerPosition
 {
 public:
-    TowerPosition(QPoint pos, const QPixmap &sprite = QPixmap("../lwTowerDemo/image/炮塔底座.png"));
+    TowerPosition(QPoint pos, const QPixmap &sprite = QPixmap("../AL_towerdefence/image/炮塔底座.png"));
 
     void setHasTower(bool hasTower = true);
     void setNoToewer();
