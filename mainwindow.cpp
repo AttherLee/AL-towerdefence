@@ -21,7 +21,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     //根据图片大小设置窗口大小
-    this->setWindowTitle("塔防小游戏");
+    this->setWindowTitle("AL_towerdefence");
+      setWindowIcon(QIcon("../lwTowerDemo/image/logo2.ico"));
       this->resize(900,490);
      m_waves=0;
     m_playerHp=5;
