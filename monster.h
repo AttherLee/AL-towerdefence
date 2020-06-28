@@ -12,36 +12,36 @@ class Tower;
 
 class Monster : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
     Monster(attackPath *startWayPoint, MainWindow *game, const int type);
     ~Monster();
 
-    void draw(QPainter *painter) const;
-    void move();
-    void getDamage(int damage);
-    void getRemoved();
-    void getAttacked(Tower *attacker);
-    void gotLostSight(Tower *attacker);
-    QPoint pos() const;
+	void draw(QPainter *painter) const;
+	void move();
+	void getDamage(int damage);
+	void getRemoved();
+	void getAttacked(Tower *attacker);
+	void gotLostSight(Tower *attacker);
+	QPoint pos() const;
 
 public slots:
-    void doActivate();
+	void doActivate();
 
 private:
-    bool			m_active;
-    int				m_maxHp;
-    int				m_currentHp;
-    qreal			m_walkingSpeed;
-    qreal			m_rotationSprite;
+	bool			m_active;
+	int				m_maxHp;
+	int				m_currentHp;
+	qreal			m_walkingSpeed;
+	qreal			m_rotationSprite;
 
-    QPoint			m_pos;
+	QPoint			m_pos;
     attackPath *		m_destinationWayPoint;
-    MainWindow *	m_game;
-    QList<Tower *>	m_attackedTowersList;
+	MainWindow *	m_game;
+	QList<Tower *>	m_attackedTowersList;
 
      QPixmap	m_sprite;
-    static const QSize ms_fixedSize;
+	static const QSize ms_fixedSize;
 };
 
 #endif // ENEMY_H

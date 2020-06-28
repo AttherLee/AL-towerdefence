@@ -68,76 +68,74 @@ Tower::Tower(QPoint pos, MainWindow *game,int type,int degree)
          m_attackRange=200;
         }
     }
-    m_fireRateTimer = new QTimer(this);
-    connect(m_fireRateTimer, SIGNAL(timeout()), this, SLOT(shootWeapon()));
+	m_fireRateTimer = new QTimer(this);
+	connect(m_fireRateTimer, SIGNAL(timeout()), this, SLOT(shootWeapon()));
 }
 
 Tower::~Tower()
 {
-    delete m_fireRateTimer;
-    m_fireRateTimer = NULL;
+	delete m_fireRateTimer;
+	m_fireRateTimer = NULL;
 }
 
 void Tower::checkEnemyInRange()
 {
-    if (m_chooseEnemy)
-    {
-        // 这种情况下,需要旋转炮台对准敌人
-        // 向量标准化
-        QVector2D normalized(m_chooseEnemy->pos() - m_pos);
-        normalized.normalize();
-        m_rotationSprite = qRadiansToDegrees(qAtan2(normalized.y(), normalized.x())) - 90;
+	if (m_chooseEnemy)
+	{
+
+		QVector2D normalized(m_chooseEnemy->pos() - m_pos);
+		normalized.normalize();
+		m_rotationSprite = qRadiansToDegrees(qAtan2(normalized.y(), normalized.x())) - 90;
         if(m_type==3)
         {
             m_rotationSprite=0;
         }
 
-        // 如果敌人脱离攻击范围
-        if (!collisionWithCircle(m_pos, m_attackRange, m_chooseEnemy->pos(), 1))
-            lostSightOfEnemy();
-    }
-    else
-    {
-        // 遍历敌人,看是否有敌人在攻击范围内
+		if (!collisionWithCircle(m_pos, m_attackRange, m_chooseEnemy->pos(), 1))
+			lostSightOfEnemy();
+	}
+	else
+	{
+
         QList<Monster *> enemyList = m_game->enemyList();
         foreach (Monster *enemy, enemyList)
-        {
-            if (collisionWithCircle(m_pos, m_attackRange, enemy->pos(), 1))
-            {
-                chooseEnemyForAttack(enemy);
-                break;
-            }
-        }
-    }
+		{
+			if (collisionWithCircle(m_pos, m_attackRange, enemy->pos(), 1))
+			{
+				chooseEnemyForAttack(enemy);
+				break;
+			}
+		}
+	}
 }
 
 void Tower::draw(QPainter *painter) const
 {
-    painter->save();
-    painter->setPen(Qt::white);
-    // 绘制攻击范围
+	painter->save();
+	painter->setPen(Qt::white);
+	// 绘制攻击范围
 //	painter->drawEllipse(m_pos, m_attackRange, m_attackRange);
 
-    // 绘制偏转坐标,由中心+偏移=左上
-    static const QPoint offsetPoint(-ms_fixedSize.width() / 2, -ms_fixedSize.height() / 2);
-    // 绘制炮塔并选择炮塔
-    painter->translate(m_pos);
+	// 绘制偏转坐标,由中心+偏移=左上
+	static const QPoint offsetPoint(-ms_fixedSize.width() / 2, -ms_fixedSize.height() / 2);
+	// 绘制炮塔并选择炮塔
+	painter->translate(m_pos);
     painter->rotate(m_rotationSprite);
     m_sprite.scaled(30,30);
-    painter->drawPixmap(offsetPoint, m_sprite);
-    painter->restore();
+	painter->drawPixmap(offsetPoint, m_sprite);
+	painter->restore();
 }
 
 void Tower::attackEnemy()
 {
-    m_fireRateTimer->start(m_fireRate);
+	m_fireRateTimer->start(m_fireRate);
 }
 
 void Tower::chooseEnemyForAttack(Monster *enemy)
 {
-    m_chooseEnemy = enemy;
-    attackEnemy();
-    m_chooseEnemy->getAttacked(this);
+	m_chooseEnemy = enemy;
+	attackEnemy();
+	m_chooseEnemy->getAttacked(this);
 }
 
 void Tower::shootWeapon()
@@ -156,19 +154,19 @@ void Tower::shootWeapon()
 
 void Tower::targetKilled()
 {
-    if (m_chooseEnemy)
-        m_chooseEnemy = NULL;
+	if (m_chooseEnemy)
+		m_chooseEnemy = NULL;
 
-    m_fireRateTimer->stop();
-    m_rotationSprite = 0.0;
+	m_fireRateTimer->stop();
+	m_rotationSprite = 0.0;
 }
 
 void Tower::lostSightOfEnemy()
 {
-    m_chooseEnemy->gotLostSight(this);
-    if (m_chooseEnemy)
-        m_chooseEnemy = NULL;
+	m_chooseEnemy->gotLostSight(this);
+	if (m_chooseEnemy)
+		m_chooseEnemy = NULL;
 
-    m_fireRateTimer->stop();
-    m_rotationSprite = 0.0;
+	m_fireRateTimer->stop();
+	m_rotationSprite = 0.0;
 }

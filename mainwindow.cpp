@@ -20,13 +20,12 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    //根据图片大小设置窗口大小
     this->setWindowTitle("AL_towerdefence");
     setWindowIcon(QIcon("../AL_towerdefence/image/logo2.ico"));
       this->resize(900,490);
      m_waves=0;
-    m_playerHp=5;
-    m_playrGold=2000;
+    m_playerHp=3;
+    m_playrGold=3000;
     m_gameEnded=false;
     m_gameWin =false;
     m_round =1;
@@ -63,12 +62,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     initPosition();
     m_musicPlayer =new QMediaPlayer();
-    m_musicPlayer->setVolume(60);
+    m_musicPlayer->setVolume(50);
     m_musicPlayer2 =new QMediaPlayer();
-    m_musicPlayer2->setVolume(40);
+    m_musicPlayer2->setVolume(120);
     combox =new QComboBox(this);
     combox->addItem(QIcon("../AL_towerdefence/image/激光1.png"),"一级激光塔");
-   // combox->addItem(QIcon("../AL_towerdefence/image/激光2.png"),"二级激光塔");
     combox->addItem(QIcon("../AL_towerdefence/image/箭塔1.png"),"一级箭塔");
     combox->addItem(QIcon("../AL_towerdefence/image/环状炮塔1.png"),"一级环状");
     combox->setCurrentIndex(-1);
@@ -116,7 +114,6 @@ void MainWindow::initPosition()
     QPoint p19(621,163);
     QPoint p20(621,314);
     QPoint p21(621,469);
-  //  QPoint p22(575,425);
 
     m_towerPositionsList.push_back(p1);
    m_towerPositionsList.push_back(p2);
@@ -141,10 +138,7 @@ void MainWindow::paintEvent(QPaintEvent *)
 {
     if (m_gameEnded || m_gameWin)
     {
-    //    QString text = m_gameEnded ? "YOU LOST!!!" : "YOU WIN!!!";
         QPainter painter(this);
-  //      painter.setPen(QPen(Qt::red));
-  //      painter.drawText(rect(), Qt::AlignCenter, text);
         QPixmap endPic;
         if(m_gameEnded)
         {
@@ -197,7 +191,6 @@ void MainWindow::paintEvent(QPaintEvent *)
      }
 
 
-    //金币更新
     m_waves=+1;
     goldcount->setText(QString::number(m_playrGold));
     gameHp->setText(QString::number(m_playerHp));
@@ -213,7 +206,6 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
     combox->hide();
     combox_c->hide();
     QPoint pressPos = event->pos();
-            //选中防御塔，选择框显示
 
     auto it = m_towerPositionsList.begin();
     while (it != m_towerPositionsList.end())
@@ -226,22 +218,14 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
              m_position=&it.i->t();
              m_pos=it->centerPos();
         }
-        if (canBuyTower(300) && it->containPoint(pressPos) && !it->hasTower())
+        if (canBuyTower(400) && it->containPoint(pressPos) && !it->hasTower())
         {
 
-    //		m_audioPlayer->playSound(TowerPlaceSound);
+    //		m_audioPlayer->playSound(TowerPlaceSound);//音乐接口
             m_position=&it.i->t();
             combox->move(event->pos());
             combox->showPopup();
             m_pos=it->centerPos();
-          //  combox->show();
-
-
-
-//             it->setHasTower();
-//            Tower *tower = new Tower(it->centerPos(), this);
-//            m_towersList.push_back(tower);
-//            update();
             break;
         }
 
@@ -262,8 +246,6 @@ void MainWindow::doGameOver()
     if (!m_gameEnded)
     {
         m_gameEnded = true;
-        // 此处应该切换场景到结束场景
-        // 暂时以打印替代,见paintEvent处理
     }
 }
 
@@ -405,7 +387,7 @@ void MainWindow::addWayPoints2()
 
 void MainWindow::getHpDamage(int damage/* = 1*/)
 {
-//	m_audioPlayer->playSound(LifeLoseSound);
+//	m_audioPlayer->playSound(LifeLoseSound);//音乐接口
     m_playerHp -= damage;
     if (m_playerHp <= 0)
         {
@@ -425,12 +407,9 @@ void MainWindow::removedEnemy(Monster *enemy)
     if (m_enemyList.empty()&&m_playerHp>0)
     {
         ++m_waves;
-        //if (!loadWave())
-       // {
             m_gameWin = true;
             m_round++;
              musiscplay("../AL_towerdefence/image/music/success.mp3");
-       // }
     }
 }
 
@@ -461,10 +440,6 @@ void MainWindow::updateMap()
 
 bool MainWindow::loadWave()
 {
-//   if(m_waves>=paraconfig.size())
-//   {
-//       return false;
-//   }
      attackPath *startWayPoint = m_wayPointsList.back();
      for (int i=0;i<paraconfig.size();i++) {
          for (int j=0;j<paraconfig[i].size();j++) {
@@ -484,7 +459,6 @@ bool MainWindow::loadWave()
               QTimer::singleShot(stime, enemy, SLOT(doActivate()));
          }
      }
- //    return true;
 
 }
 
@@ -493,7 +467,7 @@ bool MainWindow::loadWave2()
     m_flag=true;
     m_waves=0;
    m_playerHp=10;
-   m_playrGold=2000;
+   m_playrGold=3000;
    m_gameEnded=false;
    m_gameWin =false;
 
@@ -508,17 +482,14 @@ QList<Monster *> MainWindow::enemyList() const
 
 void MainWindow::gameStart()
 {
-    //开始音效
-
 
     startPushBUtton->setDisabled(true);
     if(m_round==1)
     {
          musiscplay("../AL_towerdefence/image/music/background1.mp3");
-        initConfig();//初始化怪物信息
+        initConfig();
 
       addWayPoints();
-      //初始化炮塔位置
 
         loadWave();
     }
@@ -526,8 +497,8 @@ void MainWindow::gameStart()
     {
           musiscplay("../AL_towerdefence/image/music/background2.mp3");
         loadWave2();
-        addWayPoints2();//添加路径
-        loadWave();//添加怪物
+        addWayPoints2();
+        loadWave();
         loadPosition();
     }
 
@@ -578,7 +549,7 @@ void MainWindow::getInform(int temp)
     {
         Tower *tower = new Tower(m_pos,this,1,1);
         m_towersList.push_back(tower);
-           m_playrGold =m_playrGold-300;
+           m_playrGold =m_playrGold-400;
         update();
     }
     else if(temp==1)
@@ -592,7 +563,7 @@ void MainWindow::getInform(int temp)
     {
         Tower *tower = new Tower(m_pos, this,3,1);
         m_towersList.push_back(tower);
-          m_playrGold =m_playrGold-300;
+          m_playrGold =m_playrGold-350;
         update();
     }
 
@@ -601,7 +572,6 @@ void MainWindow::getInform(int temp)
     combox->setCurrentIndex(-1);
     m_position->setHasTower();
 }
-//升级 销售
 void MainWindow::changeState(int temp)
 {
     if(temp==1)
@@ -627,8 +597,8 @@ void MainWindow::changeState(int temp)
                 int type=m_towersList.at(i)->m_type;
                 Tower *tw=new Tower(m_pos,this,type,++degree);
                 m_towersList.replace(i,tw);
-                    m_playrGold =m_playrGold-300;
-                    break;
+                m_playrGold =m_playrGold-300;
+                break;
             }
         }
     }
